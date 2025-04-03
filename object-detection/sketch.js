@@ -11,7 +11,6 @@ async function preload() {
   mCamera = createCapture(VIDEO, { video: { width: 640 }, flipped: true });
   mCamera.hide();
   await loadGradio();
-  // mClient = await GradioClient.connect("merve/GroundingDINO_OWL");
   mClient = await GradioClient.connect("codingwithlewis/owlv2");
 }
 
@@ -59,13 +58,10 @@ function capFrame() {
 }
 
 async function captionBlob(blob) {
-  const text_queries = classInput.value();
-  const score_threshold = 0.16;
-
   let objRes = await mClient.predict("/predict", {
     img: blob,
-    text_queries,
-    score_threshold,
+    text_queries: classInput.value(),
+    score_threshold: 0.16,
   });
 
   console.log(objRes);

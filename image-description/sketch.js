@@ -9,8 +9,6 @@ async function preload() {
   mCamera = createCapture(VIDEO, { video: { width: 640 }, flipped: true });
   mCamera.hide();
   await loadGradio();
-  // mClient = await GradioClient.connect("IDMNYU/9103D-2025S-api-example");
-  // mClient = await GradioClient.connect("hysts/image-captioning-with-blip");
   mClient = await GradioClient.connect("fancyfeast/joy-caption-alpha-two");
 }
 
