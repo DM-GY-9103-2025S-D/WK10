@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <script src="https://cdn.jsdelivr.net/npm/p5@1/lib/p5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/p5@1/lib/addons/p5.sound.min.js"></script>
+    <script src="../js/gradio.js"></script>
+    <script src="sketch.js"></script>
     <style>
       * {
         box-sizing: border-box;
@@ -11,10 +15,6 @@
       canvas {
         display: block;
       }
-      li {
-        font-size: 20px;
-        line-height: 1.7;
-      }
       #main {
         display: block;
         width: 100%;
@@ -24,11 +24,6 @@
     </style>
   </head>
   <body>
-    <ul>
-    <li><a href="./audio-transcription/">AUDIO TRANSCRIPTION</a></li>
-    <li><a href="./image-description/">IMAGE DESCRIPTION</a></li>
-    <li><a href="./object-detection/">OBJECT DETECTION</a></li>
-    <li><a href="./image-generation/">IMAGE GENERATION</a></li>
-    </ul>
+    <main id="main"></main>
   </body>
 </html>
