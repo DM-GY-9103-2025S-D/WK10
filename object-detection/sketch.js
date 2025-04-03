@@ -1,8 +1,14 @@
 let mCamera;
+let mImage;
+let bboxes = [];
+
+let capButt;
+let classInput;
+
 let mClient;
 
 async function preload() {
-  mCamera = createCapture(VIDEO, { flipped: true });
+  mCamera = createCapture(VIDEO, { video: { width: 640 }, flipped: true });
   mCamera.hide();
   await loadGradio();
   // mClient = await GradioClient.connect("merve/GroundingDINO_OWL");
@@ -13,32 +19,62 @@ let mCanvas;
 let mCaption = "";
 function setup() {
   mCanvas = createCanvas(windowWidth, windowHeight);
+
+  classInput = createInput("glasses,eye,mouth");
+  classInput.position(mCamera.width + 10, mCamera.height / 3 + 10);
+
+  capButt = createButton("Capture Frame");
+  capButt.position(mCamera.width + 10, mCamera.height / 3 + 40);
+  capButt.mousePressed(capFrame);
+
   mCaption = "";
   textSize(20);
 }
 
 function draw() {
   background(220);
+
   image(mCamera, 0, 0);
+  if (mImage) image(mImage, 0, 0);
+
+  noFill();
+  stroke(0, 255, 0);
+  for (const bbox of bboxes) {
+    [x0, y0, x1, y1] = bbox.pos;
+    text(bbox.object, x0, y0);
+    rect(x0, y0, x1 - x0, y1 - y0);
+  }
+
+  image(mCamera, mCamera.width, 0, mCamera.width / 3, mCamera.height / 3);
+
   text(mCaption, 10, mCamera.height, mCamera.width, 100);
 }
 
-async function captionBlob(img) {
-  const text_queries = "glasses, eye, mouth";
+function capFrame() {
+  capButt.hide();
+  classInput.hide();
+  bboxes = [];
+  mImage = loadImage(mCamera.canvas.toDataURL());
+  mCamera.canvas.toBlob(captionBlob);
+}
+
+async function captionBlob(blob) {
+  const text_queries = classInput.value();
   const score_threshold = 0.16;
 
-  const groundingDinoOwlPayload = [img, text_queries, score_threshold, 0.12];
-  const owlv2Payload = { img, text_queries, score_threshold };
-
-  let objRes = await mClient.predict("/predict", owlv2Payload);
+  let objRes = await mClient.predict("/predict", {
+    img: blob,
+    text_queries,
+    score_threshold,
+  });
 
   console.log(objRes);
   console.log(objRes.data[1]);
-}
+  bboxes = objRes.data[1];
 
-async function keyPressed() {
-  if (key === " ") {
-    console.log("sending frame");
-    mCanvas.elt.toBlob(captionBlob);
-  }
+  classInput.position(mCamera.width + 10, mCamera.height / 3 + 10);
+  capButt.position(mCamera.width + 10, mCamera.height / 3 + 40);
+
+  capButt.show();
+  classInput.show();
 }
