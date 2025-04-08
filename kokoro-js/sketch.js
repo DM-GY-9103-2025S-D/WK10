@@ -4,8 +4,10 @@ async function preload() {
 }
 
 let mCanvas;
+let mSound;
 function setup() {
   mCanvas = createCanvas(windowWidth, windowHeight);
+  mSound = new p5.SoundFile();
 }
 
 let modelReady;
@@ -22,11 +24,15 @@ async function keyPressed() {
   if (!modelReady) return;
 
   if (key === " ") {
+    console.log("generating");
     let speech = await tts.generate("hello hello world", {
       voice: "af_bella",
     });
 
-    // TODO: speech.audio is a Float32Array that should go in a p5js audio object for playback...
     console.log(speech);
+
+    mSound.setBuffer([speech.audio]);
+    mSound.rate(speech.sampling_rate / mSound.buffer.sampleRate);
+    mSound.play();
   }
 }
